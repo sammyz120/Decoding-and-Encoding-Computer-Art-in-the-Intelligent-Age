@@ -1,0 +1,110 @@
+float hueOffset = 0; // 色相偏移量
+ArrayList<Flower> flowers = new ArrayList<Flower>(); // 存储花朵对象
+
+void setup() {
+  size(800, 800);
+  colorMode(HSB, 360, 100, 100); // HSB色彩模式
+  noStroke();
+  background(0);
+}
+
+void draw() {
+  background(0, 0, 0, 25); // 半透黑背景实现拖尾效果
+  
+  // 动态更新所有花朵
+  for (int i = flowers.size()-1; i >= 0; i--) {
+    Flower f = flowers.get(i);
+    f.update();
+    f.display();
+    if (f.isDead()) flowers.remove(i); // 移除过期花朵
+  }
+  
+  // 色相动态渐变（彩虹效果）
+  hueOffset = (hueOffset + 0.5) % 360;
+}
+
+void keyPressed() {
+  if (key == 'a' || key == 'A') generateFlower(1); // 简约风格
+  if (key == 's' || key == 'S') generateFlower(2); // 对称分形
+  if (key == 'd' || key == 'D') generateFlower(3); // 旋转幻影
+}
+
+// 生成不同类型花朵
+void generateFlower(int type) {
+  float x = random(width*0.2, width*0.8);
+  float y = random(height*0.2, height*0.8);
+  int petals = (int)random(5, 15); // 花瓣数量
+  float size = random(50, 150); // 花朵大小
+  
+  // 根据类型设置参数
+  switch(type) {
+    case 1: 
+      flowers.add(new Flower(x, y, size, petals, 0.1, 0)); 
+      break;
+    case 2:
+      flowers.add(new Flower(x, y, size, petals*2, 0.05, 1)); 
+      break;
+    case 3:
+      flowers.add(new Flower(x, y, size, petals, 0.2, 2)); 
+      break;
+  }
+}
+
+// 花朵类
+class Flower {
+  float x, y, size, angle, speed;
+  int type, lifespan = 200;
+  color col;
+  
+  Flower(float x_, float y_, float size_, int petals_, float speed_, int type_) {
+    x = x_;
+    y = y_;
+    size = size_;
+    angle = random(TWO_PI); // 初始角度随机
+    speed = speed_;
+    type = type_;
+    col = color((hueOffset + random(-30,30)) % 360, 80, 90); // 随机邻近色
+  }
+  
+  void update() {
+    angle += speed; // 角度变化
+    lifespan--;
+  }
+  
+  void display() {
+    pushMatrix();
+    translate(x, y);
+    
+    // 不同类型绘制逻辑
+    if (type == 0) { // 基础花瓣
+      for (int i = 0; i < 8; i++) {
+        rotate(TWO_PI/8);
+        fill(col, lifespan*1.2);
+        ellipse(size/2, 0, size/2, size/3);
+      }
+    } 
+    else if (type == 1) { // 对称分形
+      for (int i = 0; i < 12; i++) {
+        rotate(TWO_PI/12);
+        float wave = sin(angle*2 + i)*10;
+        fill(col, lifespan);
+        bezier(0,0, wave, size/2, size+wave, 0, 0, size);
+      }
+    } 
+    else { // 旋转幻影
+      rotate(angle);
+      for (int i = 0; i < 6; i++) {
+        rotate(TWO_PI/6);
+        fill(col, lifespan/2);
+        float s = size * map(sin(angle*3), -1,1, 0.5,1.5);
+        ellipse(s/2, 0, s, s/4);
+      }
+    }
+    
+    popMatrix();
+  }
+  
+  boolean isDead() {
+    return lifespan < 0;
+  }
+}
