@@ -1,1 +1,73 @@
+ArrayList<Lotus> lotuses = new ArrayList<Lotus>(); // 存储莲花对象
+color[] palette = {#FF3366, #FF9933, #66CC99, #3399FF}; // 红、橙、绿、蓝水墨色板
 
+void setup() {
+  size(800, 800);
+  background(255); // 白色宣纸背景
+  noStroke();
+}
+
+void draw() {
+  // 每帧绘制半透明宣纸纹理
+  fill(255, 10);
+  rect(0, 0, width, height);
+  
+  // 动态绘制所有莲花
+  for (int i = lotuses.size()-1; i >= 0; i--) {
+    Lotus l = lotuses.get(i);
+    l.update();
+    l.display();
+  }
+}
+
+void keyPressed() {
+  // 按数字键1-4生成不同颜色的莲花
+  if (key >= '1' && key <= '4') {
+    int index = key - '1'; // 将按键映射到色板索引
+    lotuses.add(new Lotus(mouseX, mouseY, palette[index])); // 在鼠标位置生成莲花
+  }
+  
+  // 按空格键清空画布
+  if (key == ' ') {
+    lotuses.clear();
+    background(255);
+  }
+}
+
+// 莲花类
+class Lotus {
+  float x, y, size, angle;
+  color col;
+  
+  Lotus(float x_, float y_, color c_) {
+    x = x_;
+    y = y_;
+    size = 0; // 初始大小为0
+    col = c_;
+    angle = random(TWO_PI); // 随机初始旋转角度
+  }
+  
+  void update() {
+    size += 1.5; // 莲花逐渐绽放
+    angle += 0.02; // 缓慢旋转
+  }
+  
+  void display() {
+    pushMatrix();
+    translate(x, y);
+    rotate(angle);
+    
+    // 绘制水墨风格花瓣（随机形状）
+    for (int i = 0; i < 8; i++) {
+      fill(red(col), green(col), blue(col), 80); // 半透明效果
+      float offset = random(-10, 10); // 随机扰动
+      beginShape();
+      vertex(0 + offset, 0);
+      bezierVertex(30 + offset, -50, 60 + offset, -30, 0 + offset, -size);
+      bezierVertex(-60 + offset, -30, -30 + offset, -50, 0 + offset, 0);
+      endShape();
+      rotate(PI/4); // 每45度绘制一瓣
+    }
+    popMatrix();
+  }
+}
