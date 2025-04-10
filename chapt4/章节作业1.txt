@@ -1,0 +1,40 @@
+//链接：https://www.zhihu.com/question/46487769/answer/146742052
+int squareNum=20*20; // 共20*20个小正方形
+int sideLength=15; // 每个正方形边长为15
+
+void setup(){
+  size(400,400);//设置画布大小
+  stroke(0);//描边黑色
+  noLoop();//停止循环
+}
+
+void draw(){
+  background(255);//白色背景
+  rect(0,0,width-1,height-1);// 外边框
+  for(int i=0;i<width/sideLength;i++){
+    for(int j=0;j<height/sideLength;j++){
+      Square newSquare=new Square(sideLength*i,sideLength*j,sideLength);
+      newSquare.display();
+    }
+  }
+}
+
+class Square{
+  int x,y;
+  int l;
+  boolean r; // 确定从左上角开始划线还是从右上角开始
+  
+  Square(int x,int y,int l){
+    this.x=x;
+    this.y=y;
+    this.l=l;
+    r=(random(0,1)>=0.5);//生成0～1之间的随机数，大于等于0.5标记为1，其余标记为0
+  }
+  
+  void display(){
+    stroke(#FF2436);//描边红色
+    strokeWeight(2);//线条强度
+    line(x+abs(int(r)-1)*l,y,x+int(r)*l,y+l);//连接对角线，r=1时连接左上到右下，r=0时连接右上到左下
+  }
+
+}
