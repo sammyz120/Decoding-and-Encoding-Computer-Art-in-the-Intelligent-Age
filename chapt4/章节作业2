@@ -1,0 +1,48 @@
+void setup(){ 
+size(300,300);  //画布大小
+smooth();  //平滑
+background(0);  //背景
+strokeWeight(2);  //勾线
+rectMode(CENTER);  //设置中心点
+}
+
+void draw(){ 
+for(int y = 10; y <= 270; y += 40){  
+ for (int x =10; x <= 270; x += 40){  //设置xy
+   noFill();//不填充
+   stroke(y,x,255);  //改变RG颜色
+   strokeWeight(2);//勾边宽度
+   bezier(x, y, x+10,y,x+20,y+10,x+20,y+20);   //改变x2，y2顶点坐标
+ }
+}
+for(int y = 10; y <= 270; y += 40){  
+ for (int x =10; x <= 270; x += 40){  //设置xy
+   noFill();//不填充
+   stroke(y,y,255);  //改变RG颜色
+   strokeWeight(2);//勾边宽度
+   bezier(x+20, y+20, x+20,y+30,x+30,y+40,x+40,y+40);   //改变x2，y2顶点坐标
+ }
+}
+for (int i = 0; i < 10; i +=3){   //控制圆的重复扩大 
+for (int x = 0; x < 230; x +=40){  //控制圆形X轴方向的重复  
+for (int y = 0; y <270; y += 40){ //控制圆形Y轴方向的重复    
+stroke(random(255),random(255),255);    //颜色随机
+strokeWeight(1);    //勾边
+ellipse(50+x,30+y,i,i);    //圆
+
+if (mousePressed){ //如果点击鼠标    
+if (mouseButton == LEFT){ //如果点击鼠标左键    
+fill(255);    //填充
+}    
+else if(mouseButton == RIGHT){ //如果点击鼠标右键    
+fill(0);    //填充
+}    
+else { //否则点击中间键    
+fill(55,0,255);    //填充
+}    
+rect(mouseX, mouseY, 100, 100);    //绘制方形
+}    
+}    
+}    
+}   
+}
