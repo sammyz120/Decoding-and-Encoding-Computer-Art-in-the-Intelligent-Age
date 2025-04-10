@@ -1,0 +1,51 @@
+import processing.video.*;
+Capture cam; // 定义摄像头对象  
+color findColor; // 定义查找颜色    
+void setup(){  
+  size(640,480); // 设置窗口大小  
+  cam = new Capture(this, width, height, 30); // 创建摄像头对象  
+  cam.start();  // 开始捕获视频流  
+  findColor = color(0,255,0); // 将查找颜色初始化为绿色  
+  smooth(); // 启用抗锯齿  
+}    
+void draw(){  
+  if (cam.available()){ // 如果摄像头有可用的视频流  
+    cam.read(); // 读取视频流  
+  }  
+  cam.loadPixels(); // 加载像素      
+  image(cam,0,0); // 将摄像头捕获的视频流展示到窗口      
+  float difference = 300; // 初始化距离差异值为 300  
+  int minX = 0; // 初始化最小 X 坐标值为 0  
+  int minY = 0; // 初始化最小 Y 坐标值为 0  
+
+for (int x = 0; x < cam.width; x++){ // 遍历所有像素点的 X 坐标  
+    for (int y = 0; y < cam.height; y++){ // 遍历所有像素点的 Y 坐标  
+      int loc = x + y*cam.width; // 获取像素点在像素数组中的索引位置  
+      color camColor = cam.pixels[loc]; // 获取像素点的颜色值  
+      float r1 = red(camColor); // 获取像素点的红色通道值  
+      float g1 = green(camColor); // 获取像素点的绿色通道值  
+      float b1 = blue(camColor); // 获取像素点的蓝色通道值  
+      float r2 = red(findColor); // 获取查找颜色的红色通道值  
+      float g2 = green(findColor); // 获取查找颜色的绿色通道值  
+      float b2 = blue(findColor); // 获取查找颜色的蓝色通道值          
+      float d = dist(r1,g1,b1,r2,g2,b2); // 计算像素点颜色和查找颜色之间的距离  
+      if (d < difference){ // 如果距离小于差异值  
+        difference = d; // 更新差异值  
+        minX = x; // 更新最小 X 坐标值  
+        minY = y; // 更新最小 Y 坐标值  
+      }  
+    }  
+  }  
+
+if (difference <15){ // 如果差异值小于 15  
+    fill(findColor); // 设置填充颜色为查找颜色  
+    strokeWeight(2.0); // 设置描边宽度为 2 像素  
+    stroke(255); // 设置描边颜色为白色  
+    rectMode(CENTER); // 设置矩形绘制模式为中心模式  
+    rect(minX,minY,60,60);  
+}  
+}    
+void mousePressed(){  
+  int loc = mouseX + mouseY*cam.width; //当鼠标点击某一像素时，则记录该像素的色彩  
+  findColor = cam.pixels[loc]; //找到此色彩位置，进行捕捉  
+}  
