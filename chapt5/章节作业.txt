@@ -1,1 +1,39 @@
-
+PImage p1,p2,p3,p4; //设置输入图片  
+PFont q;//字体
+void setup(){  
+  size(500,600);   //设置画布大小  
+  p1=loadImage("1.jpg");  //输入图片  
+    p2=loadImage("2.png"); 
+    p3=loadImage("3.png"); 
+    p4=loadImage("4.png"); 
+  p1.resize(500,600);  //设置图片大小 
+  p2.resize(150,120); 
+    p3.resize(150,120); 
+      p4.resize(150,120); 
+  image(p1,0,0);//背景图
+  frameRate(15);//帧速率
+}  
+void draw(){   
+   
+    if( mousePressed){//鼠标交互
+      image(p2,mouseX-30,mouseY-30);
+      float a=random(3);//三种花交替出现
+      if (a<1)
+      {       
+      image(p2,mouseX-30,mouseY-30);
+    }
+    else if(a<2)
+     {       
+     image(p3,mouseX-30,mouseY-30);
+    }
+    else
+     {       
+   image(p4,mouseX-30,mouseY-30);
+    }
+    }
+    q = loadFont("EdwardianScriptITC-48.vlw"); //调取字体  
+textFont(q,48); //指定字体  
+fill(#FFFFFF);  //白色
+  textSize(100);//字体大小  
+  text("Frida Kahlo",60,450); //显示文本内容，文本x，y坐标  
+  }  
