@@ -1,1 +1,73 @@
+import processing.video.*; // 导入 processing.video 库    
+Capture cam; // 用于视频捕获的对象    
+color findColor; // 目标颜色   
+int[] xp = new int[50]; // x 坐标数组    
+int[] yp = new int[50]; // y 坐标数组      
 
+void setup() {  
+  size(640, 480);  
+  cam = new Capture(this, width, height, 15); // 初始化捕获对象    
+  cam.start(); // 开始视频捕获    
+  findColor = color(0, 255, 0); // 初始化目标颜色为绿色    
+  stroke(findColor); // 设置描边颜色    
+  strokeWeight(1); // 设置描边宽度    
+  smooth();  
+  for (int i = 0; i < xp.length; i++) { // 初始化 x, y 坐标数组    
+    xp[i] = 0;  
+    yp[i] = 0;  
+  }  
+}  
+
+void draw() {  
+  if (cam.available()) { // 如果视频捕获对象可用  
+    cam.read(); // 读取当前帧  
+  }  
+  cam.loadPixels(); // 加载像素数据  
+  image(cam, 0, 0); // 将当前帧画到画布上  
+  
+  float difference = 300; // 初始化差异值  
+  int minX = 0; // 最小 X 坐标  
+  int minY = 0; // 最小 Y 坐标  
+  
+  for (int x = 0; x < cam.width; x++) { // 遍历所有像素点  
+    for (int y = 0; y < cam.height; y++) {  
+      int loc = x + y * cam.width; // 获取像素点在一维数组中的下标  
+      color currentColor = cam.pixels[loc]; // 获取当前像素点的颜色  
+
+      float r1 = red(currentColor); // 获取当前像素点的红色分量  
+      float g1 = green(currentColor); // 获取当前像素点的绿色分量  
+      float b1 = blue(currentColor); // 获取当前像素点的蓝色分量  
+
+      float r2 = red(findColor); // 获取目标颜色的红色分量  
+      float g2 = green(findColor); // 获取目标颜色的绿色分量  
+      float b2 = blue(findColor); // 获取目标颜色的蓝色分量  
+
+      float d = dist(r1, g1, b1, r2, g2, b2); // 计算当前像素点与目标颜色的差异值  
+
+      if (d < difference) { // 如果差异值小于最小差异值  
+        difference = d; // 当前像素色差值取代对比像素色差值  
+        minX = x; // 更新最小 X 坐标  
+        minY = y; // 更新最小 Y 坐标  
+      }  
+    } 
+  }
+
+  if (difference < 15) { // 如果最小差异值小于 15，显示该像素位置  
+    for (int i = 0; i < xp.length - 1; i++) { // 移动 x, y 坐标数组  
+      xp[i] = xp[i + 1]; // 将元素向前移动一位  
+      yp[i] = yp[i + 1];  
+    }  
+    xp[xp.length - 1] = minX;  
+    yp[yp.length - 1] = minY;      
+  }
+
+  for (int i = 0; i < xp.length; i++) {   
+    fill(findColor);  
+    ellipse(xp[i], yp[i], i, i);  
+  }  
+}      
+
+void mousePressed() {  
+  int loc = mouseX + mouseY * cam.width; // 鼠标点击时记录该像素颜色    
+  findColor = cam.pixels[loc]; // 设置为新的目标颜色    
+} 
