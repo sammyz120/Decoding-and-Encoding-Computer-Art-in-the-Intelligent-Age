@@ -1,0 +1,25 @@
+// 定义全局变量
+int x, y, w, h, i;
+float d = .01, di, X, Y;
+
+void setup() {
+  size(500, 500);
+  w = width; // 宽度
+  h = height; // 高度
+  X = w / 2; // x坐标为画布宽度的一半
+  Y = h / 2; // y坐标为画布高度的一半
+}
+
+void draw() {
+  background(255);
+  X += (mouseX - X) * 0.05; // x轴
+  Y += (mouseY - Y) * 0.05; // y轴
+  for (y = 0; y < h; y++) { 
+    for (x = 0; x < w; x++) { 
+      di = dist(x, y, X, Y) / 4; // 计算当前像素点到起始点的距离，并缩小4倍
+      // 根据当前像素点的坐标和时间i计算出对应的噪声值
+      // 然后根据噪声值的大小来设置像素点的颜色
+      set(x, y, ((i * d * d / 39 + di * noise(x * d, y * d + d * d * d * i++ / 39)) % 8) <= 1 ? -1 : color(random(255), random(255), random(255)));
+    }  
+  }
+}
